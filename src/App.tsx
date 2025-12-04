@@ -1,109 +1,106 @@
 import { useState } from "react";
-import { BottomNav } from "./components/BottomNav";
 import { HomeScreen } from "./components/HomeScreen";
+import { MyAvalesScreen } from "./components/MyAvalesScreen";
+import { RequestsScreen } from "./components/RequestsScreen";
+import { ChatScreen } from "./components/ChatScreen";
+import { ProfileScreen } from "./components/ProfileScreen";
+import { BottomNav } from "./components/BottomNav";
 import { AddAvailabilityModal } from "./components/AddAvailabilityModal";
 import { FriendDetailView } from "./components/FriendDetailView";
-import { MyAvalesScreen } from "./components/MyAvalesScreen";
-import { NotificationsScreen } from "./components/NotificationsScreen";
 import { GroupsView } from "./components/GroupsView";
-import { ProfileScreen } from "./components/ProfileScreen";
-import { ChatScreen } from "./components/ChatScreen";
-import { toast } from "sonner@2.0.3";
-import { Toaster } from "./components/ui/sonner";
+import { NotificationsScreen } from "./components/NotificationsScreen";
+import { OnboardingFlow } from "./components/OnboardingFlow";
+import { AnimatePresence } from "motion/react";
 
 export default function App() {
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
   const [activeTab, setActiveTab] = useState("plans");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
-
-  const handleAddAvailability = () => {
-    setShowAddModal(true);
-  };
-
-  const handleSaveAvailability = () => {
-    setShowAddModal(false);
-    toast.success("Availability added ✅", {
-      description: "Your friends have been notified",
-    });
-  };
+  const [showAddAvailability, setShowAddAvailability] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+  const [showGroups, setShowGroups] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleFriendClick = (friendId: string) => {
-    setSelectedFriendId(friendId);
+    setSelectedFriend(friendId);
   };
 
   const handleBackFromFriend = () => {
-    setSelectedFriendId(null);
+    setSelectedFriend(null);
   };
 
-  const renderContent = () => {
-    // Friend detail view takes priority
-    if (selectedFriendId) {
-      return (
-        <FriendDetailView
-          friendId={selectedFriendId}
-          onBack={handleBackFromFriend}
-        />
-      );
+  const handleShowGroups = () => {
+    setShowGroups(true);
+  };
+
+  const handleBackFromGroups = () => {
+    setShowGroups(false);
+  };
+
+  const handleShowNotifications = () => {
+    setShowNotifications(true);
+  };
+
+  const handleBackFromNotifications = () => {
+    setShowNotifications(false);
+  };
+
+  const handleCompleteOnboarding = () => {
+    setHasCompletedOnboarding(true);
+  };
+
+  const handleLogin = () => {
+    // Mock login - in production this would handle actual authentication
+    setHasCompletedOnboarding(true);
+  };
+
+  // Show onboarding if not completed
+  if (!hasCompletedOnboarding) {
+    return <OnboardingFlow onComplete={handleCompleteOnboarding} onLogin={handleLogin} />;
+  }
+
+  const renderScreen = () => {
+    if (showNotifications) {
+      return <NotificationsScreen onBack={handleBackFromNotifications} />;
     }
 
-    // Otherwise render based on active tab
+    if (showGroups) {
+      return <GroupsView onBack={handleBackFromGroups} />;
+    }
+
+    if (selectedFriend) {
+      return <FriendDetailView friendId={selectedFriend} onBack={handleBackFromFriend} />;
+    }
+
     switch (activeTab) {
       case "plans":
-        return (
-          <HomeScreen
-            onAddAvailability={handleAddAvailability}
-            onFriendClick={handleFriendClick}
-          />
-        );
+        return <HomeScreen onAddAvailability={() => setShowAddAvailability(true)} onFriendClick={handleFriendClick} />;
       case "my-avales":
-        return <MyAvalesScreen onAddAvailability={handleAddAvailability} />;
+        return <MyAvalesScreen onAddAvailability={() => setShowAddAvailability(true)} />;
       case "requests":
-        return <NotificationsScreen />;
+        return <RequestsScreen />;
       case "chat":
         return <ChatScreen />;
       case "you":
-        return <ProfileScreen />;
+        return <ProfileScreen onShowGroups={handleShowGroups} onShowNotifications={handleShowNotifications} />;
       default:
-        return (
-          <HomeScreen
-            onAddAvailability={handleAddAvailability}
-            onFriendClick={handleFriendClick}
-          />
-        );
+        return <HomeScreen onAddAvailability={() => setShowAddAvailability(true)} onFriendClick={handleFriendClick} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0b1e] text-[#f5f5f7] flex items-center justify-center">
-      {/* Mobile Container */}
-      <div className="w-full max-w-md h-screen bg-[#0a0b1e] relative overflow-hidden shadow-2xl">
-        {/* Content */}
-        <div className="h-full">
-          {renderContent()}
-        </div>
-
-        {/* Bottom Navigation */}
-        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* Add Availability Modal */}
-        {showAddModal && (
-          <AddAvailabilityModal
-            onClose={() => setShowAddModal(false)}
-            onSave={handleSaveAvailability}
-          />
+    <div className="min-h-screen bg-[#0a0b1e] text-[#f5f5f7]">
+      <div className="max-w-md mx-auto relative min-h-screen">
+        {renderScreen()}
+        
+        {!showNotifications && !showGroups && !selectedFriend && (
+          <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
         )}
 
-        {/* Toast Notifications */}
-        <Toaster
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: "#141530",
-              color: "#f5f5f7",
-              border: "1px solid rgba(232, 184, 254, 0.2)",
-            },
-          }}
-        />
+        <AnimatePresence>
+          {showAddAvailability && (
+            <AddAvailabilityModal onClose={() => setShowAddAvailability(false)} />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

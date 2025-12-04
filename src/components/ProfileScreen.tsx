@@ -1,9 +1,14 @@
-import { Edit, Bell, LogOut, Trash2, User, ChevronRight } from "lucide-react";
+import { Edit, Bell, LogOut, Trash2, User, ChevronRight, Users } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Switch } from "./ui/switch";
 
-export function ProfileScreen() {
+interface ProfileScreenProps {
+  onShowGroups: () => void;
+  onShowNotifications: () => void;
+}
+
+export function ProfileScreen({ onShowGroups, onShowNotifications }: ProfileScreenProps) {
   return (
     <div className="h-full overflow-auto pb-28 px-5 pt-6">
       {/* Header */}
@@ -49,10 +54,13 @@ export function ProfileScreen() {
           <p className="text-2xl mb-1 text-[#CEFEB8]">8</p>
           <p className="text-xs text-[#9899ac]">Hangouts</p>
         </div>
-        <div className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10 text-center">
+        <button 
+          onClick={onShowGroups}
+          className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10 text-center hover:bg-[#1a1b3a] transition-colors"
+        >
           <p className="text-2xl mb-1 text-[#9899ac]">3</p>
           <p className="text-xs text-[#9899ac]">Groups</p>
-        </div>
+        </button>
       </div>
 
       {/* Notification Preferences */}
@@ -60,7 +68,10 @@ export function ProfileScreen() {
         <h3 className="mb-3">Notification Preferences</h3>
         <div className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10">
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <button 
+              onClick={onShowNotifications}
+              className="flex items-center justify-between w-full text-left hover:opacity-80 transition-opacity"
+            >
               <div className="flex items-center gap-3">
                 <Bell className="w-5 h-5 text-[#9899ac]" />
                 <div>
@@ -69,7 +80,7 @@ export function ProfileScreen() {
                 </div>
               </div>
               <Switch defaultChecked />
-            </div>
+            </button>
             <div className="h-px bg-white/5" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

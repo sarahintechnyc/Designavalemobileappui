@@ -1,4 +1,4 @@
-import { Calendar, Clock, Plus, Edit, Trash2, Copy, MoreVertical, Repeat } from "lucide-react";
+import { Calendar, Clock, Plus, Edit, Trash2, Copy, MoreVertical, Repeat, Send, X, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { motion, PanInfo } from "motion/react";
@@ -42,8 +42,30 @@ const upcomingAvales = [
   },
 ];
 
+const pendingRequests = [
+  {
+    id: "pr1",
+    friendName: "Kelly Martinez",
+    date: "Sunday, Nov 9",
+    time: "10:00 AM",
+    energy: "high" as const,
+    message: "Want to check out that new arcade bar?",
+    sentTime: "2 hours ago",
+  },
+  {
+    id: "pr2",
+    friendName: "Alex Kim",
+    date: "Friday, Nov 7",
+    time: "8:00 PM",
+    energy: "low" as const,
+    message: "Movie night?",
+    sentTime: "1 day ago",
+  },
+];
+
 export function MyAvalesScreen({ onAddAvailability }: MyAvalesScreenProps) {
   const [swipedCardId, setSwipedCardId] = useState<string | null>(null);
+  const [pendingRequestsList, setPendingRequestsList] = useState(pendingRequests);
 
   const handleDragEnd = (cardId: string, info: PanInfo) => {
     if (info.offset.x < -100) {
@@ -53,6 +75,20 @@ export function MyAvalesScreen({ onAddAvailability }: MyAvalesScreenProps) {
     } else {
       setSwipedCardId(null);
     }
+  };
+
+  const handleCancelRequest = (requestId: string) => {
+    setPendingRequestsList(pendingRequestsList.filter(req => req.id !== requestId));
+  };
+
+  // Get initials for avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -66,26 +102,105 @@ export function MyAvalesScreen({ onAddAvailability }: MyAvalesScreenProps) {
       {/* Quick Add Options */}
       <div className="mb-6">
         <h3 className="mb-3 text-sm text-[#9899ac]">Quick Add</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
           <button
             onClick={onAddAvailability}
-            className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all text-left"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all whitespace-nowrap flex-shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#E8B8FE] to-[#CEFEB8] flex items-center justify-center mb-2">
-              <Plus className="w-5 h-5 text-[#0a0b1e]" />
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#E8B8FE] to-[#CEFEB8] flex items-center justify-center">
+              <Plus className="w-3.5 h-3.5 text-[#0a0b1e]" />
             </div>
-            <p className="text-sm mb-1">Custom Avale</p>
-            <p className="text-xs text-[#9899ac]">Set your own time</p>
+            <span className="text-sm">Custom Avale</span>
           </button>
-          <button className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all text-left">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#CEFEB8]/30 to-[#E8B8FE]/30 flex items-center justify-center mb-2">
-              <Repeat className="w-5 h-5 text-[#CEFEB8]" />
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all whitespace-nowrap flex-shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#CEFEB8]/30 to-[#E8B8FE]/30 flex items-center justify-center">
+              <Repeat className="w-3.5 h-3.5 text-[#CEFEB8]" />
             </div>
-            <p className="text-sm mb-1">Recurring</p>
-            <p className="text-xs text-[#9899ac]">Weekly availability</p>
+            <span className="text-sm">Recurring</span>
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all whitespace-nowrap flex-shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#CEFEB8]/20 to-[#E8B8FE]/20 flex items-center justify-center">
+              <Calendar className="w-3.5 h-3.5 text-[#CEFEB8]" />
+            </div>
+            <span className="text-sm">Today</span>
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#141530] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all whitespace-nowrap flex-shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#E8B8FE]/20 to-[#CEFEB8]/20 flex items-center justify-center">
+              <Calendar className="w-3.5 h-3.5 text-[#E8B8FE]" />
+            </div>
+            <span className="text-sm">This Weekend</span>
           </button>
         </div>
       </div>
+
+      {/* Pending Requests Section */}
+      {pendingRequestsList.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h3>Pending Requests</h3>
+              <Badge className="bg-[#E8B8FE]/20 text-[#E8B8FE] text-xs px-2 py-0">
+                {pendingRequestsList.length}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {pendingRequestsList.map((request) => (
+              <motion.div
+                key={request.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10"
+              >
+                {/* Friend Info */}
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#E8B8FE] to-[#CEFEB8] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#0a0b1e] text-xs">
+                      {getInitials(request.friendName)}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="text-sm">Sent to {request.friendName}</h4>
+                      <span className="text-xs text-[#9899ac]">{request.sentTime}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-[#9899ac] mb-2">
+                      <Calendar className="w-3 h-3" />
+                      <span>{request.date} at {request.time}</span>
+                    </div>
+                    <EnergyBadge energy={request.energy} size="sm" />
+                  </div>
+                </div>
+
+                {/* Message */}
+                {request.message && (
+                  <div className="bg-[#0a0b1e]/50 rounded-xl p-3 mb-3">
+                    <p className="text-sm text-[#f5f5f7]/90">{request.message}</p>
+                  </div>
+                )}
+
+                {/* Status & Actions */}
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                    <span className="text-xs text-[#9899ac]">Awaiting response</span>
+                  </div>
+                  <button
+                    onClick={() => handleCancelRequest(request.id)}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                  >
+                    <X className="w-3 h-3" />
+                    Cancel
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Upcoming Availability with Swipe Actions */}
       <div className="mb-6">
@@ -120,7 +235,11 @@ export function MyAvalesScreen({ onAddAvailability }: MyAvalesScreenProps) {
                 dragConstraints={{ left: -200, right: 200 }}
                 dragElastic={0.2}
                 onDragEnd={(_, info) => handleDragEnd(avale.id, info)}
-                className="relative p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10 cursor-grab active:cursor-grabbing"
+                onClick={() => {
+                  // Open edit modal - you'll hook this up to your actual edit function
+                  console.log('Edit avale:', avale.id);
+                }}
+                className="relative p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10 cursor-pointer active:cursor-grabbing"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -160,29 +279,15 @@ export function MyAvalesScreen({ onAddAvailability }: MyAvalesScreenProps) {
                       )}
                     </div>
                   </div>
-                  <button className="p-2 -mr-2 rounded-full hover:bg-[#1a1b3a] transition-colors">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Open more options menu
+                    }}
+                    className="p-2 -mr-2 rounded-full hover:bg-[#1a1b3a] transition-colors"
+                  >
                     <MoreVertical className="w-5 h-5 text-[#9899ac]" />
                   </button>
-                </div>
-
-                {/* Quick Actions Bar */}
-                <div className="flex gap-2 pt-3 border-t border-white/5">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 text-[#9899ac] hover:text-[#E8B8FE] hover:bg-[#E8B8FE]/10 h-9"
-                  >
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 text-[#9899ac] hover:text-[#CEFEB8] hover:bg-[#CEFEB8]/10 h-9"
-                  >
-                    <Copy className="w-4 h-4 mr-2" />
-                    Duplicate
-                  </Button>
                 </div>
               </motion.div>
             </div>
