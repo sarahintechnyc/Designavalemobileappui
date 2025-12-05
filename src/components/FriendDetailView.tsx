@@ -1,7 +1,9 @@
-import { ArrowLeft, Calendar, Clock, Flame, MessageCircle } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Flame, MessageCircle, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { EnergyBadge } from "./EnergyBadge";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface FriendDetailViewProps {
   friendId: string;
@@ -37,6 +39,21 @@ const friendData: Record<string, any> = {
 
 export function FriendDetailView({ friendId, onBack }: FriendDetailViewProps) {
   const friend = friendData[friendId];
+  const [requestSent, setRequestSent] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleRequestHangout = () => {
+    setRequestSent(true);
+    setShowSuccess(true);
+
+    // Auto-dismiss success message and go back after 2.5 seconds
+    setTimeout(() => {
+      setShowSuccess(false);
+      setTimeout(() => {
+        onBack();
+      }, 300);
+    }, 2500);
+  };
 
   if (!friend) {
     return (
@@ -82,8 +99,12 @@ export function FriendDetailView({ friendId, onBack }: FriendDetailViewProps) {
               </div>
             </div>
             <p className="text-sm mb-3">{friend.mutualAvailability.suggestion}</p>
-            <Button className="w-full bg-gradient-to-r from-[#E8B8FE] to-[#CEFEB8] text-[#0a0b1e] hover:opacity-90">
-              Request to Hang
+            <Button 
+              onClick={handleRequestHangout}
+              disabled={requestSent}
+              className="w-full bg-gradient-to-r from-[#E8B8FE] to-[#CEFEB8] text-[#0a0b1e] hover:opacity-90 disabled:opacity-50"
+            >
+              {requestSent ? 'Request Sent!' : 'Request to Hang'}
             </Button>
           </div>
         )}
@@ -146,11 +167,41 @@ export function FriendDetailView({ friendId, onBack }: FriendDetailViewProps) {
             <MessageCircle className="w-4 h-4 mr-2" />
             Message
           </Button>
-          <Button className="flex-1 bg-[#E8B8FE] text-[#0a0b1e] hover:bg-[#E8B8FE]/90">
-            Request Hangout
+          <Button 
+            onClick={handleRequestHangout}
+            disabled={requestSent}
+            className="flex-1 bg-[#E8B8FE] text-[#0a0b1e] hover:bg-[#E8B8FE]/90 disabled:opacity-50"
+          >
+            {requestSent ? 'Request Sent!' : 'Request Hangout'}
           </Button>
         </div>
       </div>
+
+      {/* Success Toast */}
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-32 left-5 right-5 z-50"
+          >
+            <div className="max-w-md mx-auto p-4 rounded-2xl bg-gradient-to-r from-[#CEFEB8]/95 to-[#E8B8FE]/95 border border-[#CEFEB8] backdrop-blur-sm shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#0a0b1e] flex items-center justify-center flex-shrink-0">
+                  <Check className="w-5 h-5 text-[#CEFEB8]" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[#0a0b1e] mb-1">Request sent to {friend.name}!</p>
+                  <p className="text-sm text-[#0a0b1e]/70">
+                    View in My Avales tab →
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

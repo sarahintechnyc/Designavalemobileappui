@@ -548,6 +548,10 @@
     bottom: calc(var(--spacing) * 24);
   }
 
+  .bottom-32 {
+    bottom: calc(var(--spacing) * 32);
+  }
+
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
@@ -562,6 +566,10 @@
 
   .left-3 {
     left: calc(var(--spacing) * 3);
+  }
+
+  .left-5 {
+    left: calc(var(--spacing) * 5);
   }
 
   .left-8 {
@@ -677,6 +685,10 @@
 
   .grid {
     display: grid;
+  }
+
+  .inline {
+    display: inline;
   }
 
   .inline-block {
@@ -1193,6 +1205,10 @@
     border-color: #141530;
   }
 
+  .border-\[\#CEFEB8\] {
+    border-color: #cefeb8;
+  }
+
   .border-\[\#CEFEB8\]\/20 {
     border-color: oklab(94.653% -.0749913 .0723296 / .2);
   }
@@ -1563,6 +1579,11 @@
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
+  .from-\[\#CEFEB8\]\/95 {
+    --tw-gradient-from: oklab(94.653% -.0749913 .0723296 / .95);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
   .from-\[\#E8B8FE\] {
     --tw-gradient-from: #e8b8fe;
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
@@ -1626,6 +1647,11 @@
 
   .to-\[\#E8B8FE\]\/30 {
     --tw-gradient-to: oklab(84.8343% .0762181 -.0762742 / .3);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+
+  .to-\[\#E8B8FE\]\/95 {
+    --tw-gradient-to: oklab(84.8343% .0762181 -.0762742 / .95);
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
 
@@ -1881,6 +1907,10 @@
 
   .text-\[\#0a0b1e\] {
     color: #0a0b1e;
+  }
+
+  .text-\[\#0a0b1e\]\/70 {
+    color: oklab(16.094% .0059839 -.0391523 / .7);
   }
 
   .text-\[\#7DD3FC\] {

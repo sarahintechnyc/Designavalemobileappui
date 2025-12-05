@@ -68,19 +68,19 @@ export function ProfileScreen({ onShowGroups, onShowNotifications }: ProfileScre
         <h3 className="mb-3">Notification Preferences</h3>
         <div className="p-4 rounded-2xl bg-[#141530] border border-[#E8B8FE]/10">
           <div className="space-y-4">
-            <button 
-              onClick={onShowNotifications}
-              className="flex items-center justify-between w-full text-left hover:opacity-80 transition-opacity"
-            >
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between w-full">
+              <button 
+                onClick={onShowNotifications}
+                className="flex items-center gap-3 text-left hover:opacity-80 transition-opacity flex-1"
+              >
                 <Bell className="w-5 h-5 text-[#9899ac]" />
                 <div>
                   <p>Hangout Requests</p>
                   <p className="text-sm text-[#9899ac]">Get notified of new requests</p>
                 </div>
-              </div>
+              </button>
               <Switch defaultChecked />
-            </button>
+            </div>
             <div className="h-px bg-white/5" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

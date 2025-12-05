@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Users, Sparkles, Filter, TrendingUp, RefreshCw, ChevronRight as ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, Users, Sparkles, Filter, TrendingUp, RefreshCw, ChevronRight as ArrowRight, Check } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
@@ -71,13 +71,31 @@ export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps
   const [showFilter, setShowFilter] = useState(false);
   const [activeFilter, setActiveFilter] = useState<"all" | "mutual" | "new">("all");
   const [showConfirmedPlans, setShowConfirmedPlans] = useState(false);
+  const [requestedFriends, setRequestedFriends] = useState<string[]>([]);
+  const [showingNotification, setShowingNotification] = useState<string | null>(null);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
+  const handleRequestHangout = (friendId: string, friendName: string) => {
+    // Mark as requested
+    setRequestedFriends([...requestedFriends, friendId]);
+    
+    // Show inline notification
+    setShowingNotification(friendId);
+    
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      setShowingNotification(null);
+    }, 3000);
+  };
+
   const filteredFriends = mockFriends.filter(friend => {
+    // Remove requested friends from the feed
+    if (requestedFriends.includes(friend.id)) return false;
+    
     if (activeFilter === "mutual") return friend.mutualFree;
     if (activeFilter === "new") return friend.new;
     return true;
@@ -309,6 +327,34 @@ export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps
                 </div>
               </motion.button>
             ))}
+            
+            {/* Inline Notifications for Requested Friends */}
+            <AnimatePresence>
+              {mockFriends
+                .filter(friend => requestedFriends.includes(friend.id) && showingNotification === friend.id)
+                .map((friend) => (
+                  <motion.div
+                    key={`notification-${friend.id}`}
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, height: 0, marginBottom: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full p-4 rounded-2xl bg-gradient-to-r from-[#CEFEB8]/20 to-[#E8B8FE]/20 border border-[#CEFEB8]/30 mb-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#CEFEB8] flex items-center justify-center flex-shrink-0">
+                        <Check className="w-5 h-5 text-[#0a0b1e]" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="mb-1">Request sent to {friend.name}!</p>
+                        <p className="text-sm text-[#9899ac]">
+                          View in <span className="text-[#CEFEB8]">My Avales</span> tab →
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>
