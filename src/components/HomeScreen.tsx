@@ -57,13 +57,13 @@ const mockFriends = [
 ];
 
 const weekDays = [
-  { day: "Wed", date: 5, isToday: true, hasAvailability: true, count: 2 },
-  { day: "Thu", date: 6, hasAvailability: false, count: 0 },
-  { day: "Fri", date: 7, hasAvailability: true, count: 1 },
-  { day: "Sat", date: 8, hasAvailability: true, count: 3 },
-  { day: "Sun", date: 9, hasAvailability: true, count: 4 },
-  { day: "Mon", date: 10, hasAvailability: false, count: 0 },
-  { day: "Tue", date: 11, hasAvailability: false, count: 0 },
+  { day: "Wed", date: 5, isToday: true, hasAvailability: true, availabilityCount: 2, hasConfirmedPlans: false },
+  { day: "Thu", date: 6, hasAvailability: false, availabilityCount: 0, hasConfirmedPlans: false },
+  { day: "Fri", date: 7, hasAvailability: true, availabilityCount: 1, hasConfirmedPlans: true },
+  { day: "Sat", date: 8, hasAvailability: true, availabilityCount: 3, hasConfirmedPlans: false },
+  { day: "Sun", date: 9, hasAvailability: true, availabilityCount: 4, hasConfirmedPlans: true },
+  { day: "Mon", date: 10, hasAvailability: false, availabilityCount: 0, hasConfirmedPlans: false },
+  { day: "Tue", date: 11, hasAvailability: false, availabilityCount: 0, hasConfirmedPlans: true },
 ];
 
 export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps) {
@@ -159,7 +159,7 @@ export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <span className="text-[#9899ac] uppercase tracking-wide text-xs">NOV 5</span>
-              <Badge variant="outline" className="border-[#CEFEB8]/30 text-[#CEFEB8] text-xs">
+              <Badge variant="outline" className="border-[#E8B8FE]/30 text-[#E8B8FE] text-xs">
                 7 friends free
               </Badge>
             </div>
@@ -193,25 +193,39 @@ export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps
                 className={`relative flex-shrink-0 flex flex-col items-center justify-center w-16 h-20 rounded-2xl transition-all ${
                   day.isToday
                     ? "bg-gradient-to-br from-[#E8B8FE] to-[#CEFEB8] text-[#0a0b1e] shadow-lg shadow-[#E8B8FE]/30"
-                    : day.hasAvailability
+                    : day.hasAvailability || day.hasConfirmedPlans
                     ? "bg-[#141530] text-[#f5f5f7] border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40"
                     : "bg-[#141530]/50 text-[#9899ac] border border-transparent"
                 }`}
               >
                 <span className="text-xs mb-1">{day.day}</span>
                 <span className="text-lg mb-1">{day.date}</span>
-                {day.hasAvailability && (
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: Math.min(day.count, 3) }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-1 h-1 rounded-full ${
-                          day.isToday ? "bg-[#0a0b1e]" : "bg-[#CEFEB8]"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
+                
+                {/* Dot Indicators */}
+                <div className="flex gap-1 items-center h-2">
+                  {/* Purple dot for friend availability */}
+                  {day.hasAvailability && (
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: Math.min(day.availabilityCount, 3) }).map((_, i) => (
+                        <div
+                          key={`avail-${i}`}
+                          className={`w-1 h-1 rounded-full ${
+                            day.isToday ? "bg-[#0a0b1e]/50" : "bg-[#E8B8FE]"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Green dot for confirmed plans */}
+                  {day.hasConfirmedPlans && (
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        day.isToday ? "bg-[#0a0b1e]" : "bg-[#CEFEB8]"
+                      }`}
+                    />
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -355,6 +369,18 @@ export function HomeScreen({ onAddAvailability, onFriendClick }: HomeScreenProps
                   </motion.div>
                 ))}
             </AnimatePresence>
+          </div>
+          
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[#9899ac]">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#E8B8FE]" />
+              <span>Friends free</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#CEFEB8]" />
+              <span>Confirmed plan</span>
+            </div>
           </div>
         </div>
       </div>
