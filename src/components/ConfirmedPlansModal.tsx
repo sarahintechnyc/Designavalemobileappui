@@ -1,8 +1,8 @@
-import { X, Calendar, Clock, MapPin, MessageCircle, Users } from "lucide-react";
-import { Button } from "./ui/button";
+import { X, Calendar, MapPin, Users, Clock, MessageCircle } from "lucide-react";
+import { motion } from "motion/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
-import { motion } from "motion/react";
+import { Button } from "./ui/button";
 import { EnergyBadge } from "./EnergyBadge";
 
 interface ConfirmedPlansModalProps {
@@ -12,59 +12,62 @@ interface ConfirmedPlansModalProps {
 const confirmedPlans = [
   {
     id: "1",
-    title: "Coffee & Brunch",
-    day: "Sunday, Nov 9",
-    time: "10:00 AM - 12:00 PM",
-    friends: [
-      {
-        name: "Sarah Chen",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
-      },
-    ],
-    location: "Central Park Café",
+    friend: {
+      name: "Sarah Chen",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+    },
+    date: "Sunday, Dec 8",
+    time: "10:00 AM - 2:30 PM",
+    startDateTime: "20241208T100000",
+    endDateTime: "20241208T143000",
+    activity: "Brunch",
     energy: "high" as const,
-    activities: ["Coffee", "Brunch"],
-    status: "confirmed",
+    location: "Downtown Cafe",
   },
   {
     id: "2",
-    title: "Game Night",
-    day: "Saturday, Nov 8",
-    time: "7:00 PM - 10:00 PM",
-    friends: [
-      {
-        name: "Marcus Johnson",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-      },
-      {
-        name: "Alex Kim",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-      },
-    ],
-    location: "Marcus's Place",
-    energy: "high" as const,
-    activities: ["Board Games", "Pizza"],
-    status: "confirmed",
+    friend: {
+      name: "Emma Wilson",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+    },
+    date: "Friday, Dec 6",
+    time: "8:00 PM - 11:00 PM",
+    startDateTime: "20241206T200000",
+    endDateTime: "20241206T230000",
+    activity: "Movie Night",
+    energy: "low" as const,
+    location: "Emma's Place",
   },
   {
     id: "3",
-    title: "Yoga Class",
-    day: "Friday, Nov 7",
-    time: "9:00 AM - 10:30 AM",
-    friends: [
-      {
-        name: "Emma Wilson",
-        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-      },
-    ],
-    location: "Sunrise Yoga Studio",
-    energy: "low" as const,
-    activities: ["Yoga", "Wellness"],
-    status: "confirmed",
+    friend: {
+      name: "Marcus Johnson",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+    },
+    date: "Tuesday, Dec 10",
+    time: "6:00 PM - 10:00 PM",
+    startDateTime: "20241210T180000",
+    endDateTime: "20241210T220000",
+    activity: "Dinner & Games",
+    energy: "high" as const,
+    location: "The Game Bar",
   },
 ];
 
 export function ConfirmedPlansModal({ onClose }: ConfirmedPlansModalProps) {
+  const handleAddToCalendar = (plan: typeof confirmedPlans[0]) => {
+    // Generate Google Calendar URL
+    const title = encodeURIComponent(`${plan.activity} with ${plan.friend.name}`);
+    const details = encodeURIComponent(`Hangout with ${plan.friend.name} - ${plan.activity}`);
+    const location = encodeURIComponent(plan.location);
+    const dates = `${plan.startDateTime}/${plan.endDateTime}`;
+    
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+    
+    // Open in new tab
+    window.open(calendarUrl, '_blank');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -114,68 +117,52 @@ export function ConfirmedPlansModal({ onClose }: ConfirmedPlansModalProps) {
                   key={plan.id}
                   className="p-5 rounded-2xl bg-gradient-to-br from-[#141530] to-[#141530]/50 border border-[#E8B8FE]/20 hover:border-[#E8B8FE]/40 transition-all"
                 >
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3>{plan.title}</h3>
-                        <Badge className="bg-[#CEFEB8] text-[#0a0b1e] text-xs px-2 py-0">
+                  {/* Main Content - Avatar on Right */}
+                  <div className="flex gap-4 mb-4">
+                    {/* Left: Plan Details */}
+                    <div className="flex-1 min-w-0">
+                      {/* Title & Badge */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <h3 className="truncate">{plan.activity}</h3>
+                        <Badge className="bg-[#CEFEB8] text-[#0a0b1e] text-xs px-2 py-0 shrink-0">
                           Confirmed
                         </Badge>
                       </div>
+
+                      {/* Date/Time/Location */}
                       <div className="flex flex-col gap-2 text-sm text-[#9899ac] mb-3">
                         <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>{plan.day}</span>
+                          <Calendar className="w-4 h-4 shrink-0" />
+                          <span>{plan.date}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-4 h-4 shrink-0" />
                           <span>{plan.time}</span>
                         </div>
                         {plan.location && (
                           <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
+                            <MapPin className="w-4 h-4 shrink-0" />
                             <span>{plan.location}</span>
                           </div>
                         )}
                       </div>
-                      <EnergyBadge energy={plan.energy} size="sm" />
-                    </div>
-                  </div>
 
-                  {/* Friends */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-[#9899ac]" />
-                      <span className="text-sm text-[#9899ac]">
-                        {plan.friends.length === 1 ? "With" : `With ${plan.friends.length} friends`}
-                      </span>
+                      {/* Energy Badge & Friend Name */}
+                      <div className="flex items-center gap-3">
+                        <EnergyBadge energy={plan.energy} size="sm" />
+                        <span className="text-sm text-[#9899ac]">with {plan.friend.name}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {plan.friends.map((friend, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <Avatar className="w-8 h-8 ring-2 ring-[#E8B8FE]/20">
-                            <AvatarImage src={friend.avatar} alt={friend.name} />
-                            <AvatarFallback>
-                              {friend.name.split(" ").map((n) => n[0]).join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm">{friend.name}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Activities */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {plan.activities.map((activity, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 rounded-lg bg-[#E8B8FE]/10 text-[#E8B8FE] text-sm"
-                      >
-                        {activity}
-                      </span>
-                    ))}
+                    {/* Right: Friend Avatar */}
+                    <div className="shrink-0">
+                      <Avatar className="w-20 h-20 ring-2 ring-[#E8B8FE]/30">
+                        <AvatarImage src={plan.friend.avatar} alt={plan.friend.name} />
+                        <AvatarFallback>
+                          {plan.friend.name.split(" ").map((n) => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
                   </div>
 
                   {/* Actions */}
@@ -184,15 +171,22 @@ export function ConfirmedPlansModal({ onClose }: ConfirmedPlansModalProps) {
                       variant="outline"
                       size="sm"
                       className="flex-1 border-[#E8B8FE]/30 text-[#E8B8FE] hover:bg-[#E8B8FE]/10 h-9"
+                      onClick={() => {
+                        // TODO: Open message/chat with friend
+                        console.log('Message', plan.friend.name);
+                      }}
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Message
                     </Button>
                     <Button
+                      variant="outline"
                       size="sm"
-                      className="flex-1 bg-gradient-to-r from-[#E8B8FE] to-[#CEFEB8] text-[#0a0b1e] hover:opacity-90 h-9"
+                      className="flex-1 border-[#E8B8FE]/30 text-[#E8B8FE] hover:bg-[#E8B8FE]/10 h-9"
+                      onClick={() => handleAddToCalendar(plan)}
                     >
-                      View Details
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Add to Calendar
                     </Button>
                   </div>
                 </div>
